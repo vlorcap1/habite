@@ -1,44 +1,557 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>habite.cl — Auditoría AEO · GEO</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0c0c0b;--bg2:#131312;--bg3:#1a1a18;--bg4:#222220;
+  --border:#2a2a28;--border2:#383836;
+  --text:#e8e6df;--text2:#9e9c95;--text3:#6b6960;
+  --accent:#e8c46a;
+  --red:#e05555;--amber:#e09640;--green:#4caf76;
+  --red-bg:#1e1010;--amber-bg:#1e1508;--green-bg:#0c1e12;
+  --red-bd:#3a1818;--amber-bd:#3a2a10;--green-bd:#183028;
+  --sw:220px;
+  --f:'Bricolage Grotesque',sans-serif;
+  --m:'DM Mono',monospace;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f);font-size:14px;line-height:1.5;overflow-x:hidden}
+.sidebar{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sb-brand{padding:22px 20px 18px;border-bottom:1px solid var(--border)}
+.sb-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:7px;vertical-align:middle}
+.sb-name{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.sb-sub{font-size:10px;color:var(--text3);font-family:var(--m);margin-top:3px;display:block}
+.sb-nav{padding:10px 0;flex:1}
+.sb-sec{padding:14px 20px 5px;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3)}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 20px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:all .15s;position:relative;user-select:none}
+.ni:hover{color:var(--text);background:var(--bg3)}
+.ni.on{color:var(--accent);background:rgba(232,196,106,.06)}
+.ni.on::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;border-radius:0 2px 2px 0;background:var(--accent)}
+.ni-ico{font-size:13px;width:15px;text-align:center;flex-shrink:0}
+.nb{margin-left:auto;font-size:10px;font-family:var(--m);padding:1px 6px;border-radius:10px;font-weight:500}
+.nb-r{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
+.sb-foot{padding:14px 20px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);font-family:var(--m)}
+.main{margin-left:var(--sw);min-height:100vh}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(12,12,11,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:13px 28px;display:flex;align-items:center;justify-content:space-between}
+.tb-title{font-size:15px;font-weight:600}
+.tb-meta{font-size:11px;font-family:var(--m);color:var(--text3)}
+.ab{display:flex;align-items:center;gap:6px;font-size:10px;font-family:var(--m);background:var(--bg3);border:1px solid var(--border2);padding:4px 10px;border-radius:20px;color:var(--text2)}
+.ad{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.content{padding:28px}
+.panel{display:none}
+.panel.on{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.sc-r::before{background:linear-gradient(90deg,var(--red),transparent)}
+.sc-a::before{background:linear-gradient(90deg,var(--amber),transparent)}
+.sc-lbl{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.sc-num{font-size:42px;font-weight:700;font-family:var(--m);line-height:1;letter-spacing:-2px}
+.sc-r .sc-num{color:var(--red)}.sc-a .sc-num{color:var(--amber)}
+.sc-max{font-size:15px;color:var(--text3);font-weight:400}
+.sc-sub{font-size:11px;color:var(--text3);margin-top:5px}
+.sc-bar{height:3px;background:var(--border2);border-radius:2px;margin-top:12px;overflow:hidden}
+.sc-fill{height:100%;border-radius:2px}
+.sc-r .sc-fill{background:var(--red)}.sc-a .sc-fill{background:var(--amber)}
+.sc-ghost{position:absolute;right:16px;top:14px;opacity:.08;font-size:38px;font-family:var(--m);font-weight:700;line-height:1;color:var(--text)}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.sh-t{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--text2)}
+.sh-l{flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent)}
+.kg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:26px}
+.kpi{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px 15px}
+.kv{font-size:22px;font-weight:700;font-family:var(--m);letter-spacing:-.5px}
+.kv.r{color:var(--red)}.kv.a{color:var(--amber)}.kv.g{color:var(--green)}
+.kl{font-size:11px;color:var(--text3);margin-top:2px}
+.ks{font-size:10px;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px}
+.ks::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.ks.r{color:var(--red)}.ks.r::before{background:var(--red)}
+.ks.a{color:var(--amber)}.ks.a::before{background:var(--amber)}
+.ks.g{color:var(--green)}.ks.g::before{background:var(--green)}
+.il{display:flex;flex-direction:column;gap:8px;margin-bottom:26px}
+.iss{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px 15px;display:flex;gap:11px;align-items:flex-start;transition:border-color .15s}
+.iss:hover{border-color:var(--border2)}
+.iss.cr{border-left:3px solid var(--red);background:var(--red-bg)}
+.iss.wa{border-left:3px solid var(--amber);background:var(--amber-bg)}
+.iss.ok{border-left:3px solid var(--green);background:var(--green-bg)}
+.ibg{font-size:9px;font-weight:700;padding:3px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;flex-shrink:0;margin-top:1px;font-family:var(--m)}
+.cr .ibg{background:var(--red-bd);color:var(--red)}
+.wa .ibg{background:var(--amber-bd);color:var(--amber)}
+.ok .ibg{background:var(--green-bg);color:var(--green)}
+.it{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.id{font-size:12px;color:var(--text2);line-height:1.6}
+.cc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:26px}
+.cc-t{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:14px}
+.cc svg{display:block;width:100%}
+.hero{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:26px;margin-bottom:26px;position:relative;overflow:hidden}
+.hero-t{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:5px}
+.hero-url{font-family:var(--m);font-size:12px;color:var(--accent);margin-bottom:15px}
+.hero-stats{display:flex;gap:22px;flex-wrap:wrap}
+.hs{display:flex;flex-direction:column;gap:2px}
+.hv{font-size:18px;font-weight:700;font-family:var(--m)}
+.hl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.ov{position:absolute;right:26px;top:50%;transform:translateY(-50%);text-align:center}
+.ov-n{font-size:50px;font-weight:700;font-family:var(--m);color:var(--amber);letter-spacing:-3px;line-height:1}
+.ov-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.rt{display:flex;flex-direction:column;margin-bottom:26px}
+.rph{display:flex;align-items:center;gap:11px;padding:13px 0 9px}
+.rpl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:3px 9px;border-radius:10px;font-family:var(--m)}
+.rp1{background:rgba(224,85,85,.15);color:var(--red);border:1px solid var(--red-bd)}
+.rp2{background:rgba(224,150,64,.15);color:var(--amber);border:1px solid var(--amber-bd)}
+.rp3{background:rgba(76,175,118,.15);color:var(--green);border:1px solid var(--green-bd)}
+.rpht{font-size:14px;font-weight:600}
+.rpb{border-left:1px solid var(--border2);margin-left:13px;padding-left:19px;padding-bottom:16px;display:flex;flex-direction:column;gap:9px}
+.ri{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 15px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;position:relative}
+.ri::before{content:'';position:absolute;left:-24px;top:50%;transform:translateY(-50%);width:7px;height:7px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2)}
+.rt-t{font-size:13px;font-weight:600;margin-bottom:2px}
+.rt-d{font-size:11px;color:var(--text2);line-height:1.5}
+.rm{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.re{font-size:10px;font-family:var(--m);color:var(--text3)}
+.rim{font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px;font-family:var(--m)}
+.hi{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
+.me{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd)}
+.lo{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
+.fb{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:15px;margin-bottom:13px}
+.fh{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.fn{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--m)}
+.ft{font-size:13px;font-weight:600}
+.fp{font-size:10px;font-family:var(--m);padding:2px 7px;border-radius:8px;margin-left:auto}
+.fd{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.cl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:4px;margin-top:10px}
+.cb{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:13px 15px;font-family:var(--m);font-size:11px;color:var(--accent);line-height:1.75;overflow-x:auto;white-space:pre}
+.gg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:26px}
+.ge{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:15px}
+.ge-n{font-size:13px;font-weight:600;margin-bottom:7px}
+.ge-s{font-size:26px;font-weight:700;font-family:var(--m);margin-bottom:3px}
+.ge-b{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-bottom:7px}
+.ge-bf{height:100%;border-radius:2px}
+.ge-d{font-size:11px;color:var(--text2);line-height:1.5}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+@media(max-width:860px){.sidebar{display:none}.main{margin-left:0}.sg,.kg,.gg{grid-template-columns:1fr 1fr}.content{padding:18px}}
+@media(max-width:540px){.sg,.kg,.gg{grid-template-columns:1fr}.ov{display:none}}
+</style>
 </head>
 <body>
-    <header>
-        <h1>Dashboard Overview</h1>
-    </header>
-    <main>
-        <section id="overview">
-            <h2>Overview Panel</h2>
-            <!-- Content related to Overview and other panels without SEO references -->
-        </section>
-        <section id="AEO">
-            <h2>AEO Panel</h2>
-            <!-- Content related to AEO without SEO references -->
-        </section>
-        <section id="GEO">
-            <h2>GEO Panel</h2>
-            <!-- Content related to GEO without SEO references -->
-        </section>
-        <section id="Fixes">
-            <h2>Fixes Panel</h2>
-            <!-- List of critical findings without SEO-related content -->
-        </section>
-        <section id="Roadmap">
-            <h2>Roadmap Panel</h2>
-            <!-- Roadmap content without SEO-related content -->
-        </section>
-        <section id="charts">
-            <h2>Charts</h2>
-            <!-- Keep only relevant datasets and labels, update charts accordingly -->
-        </section>
-    </main>
-    <footer>
-        <p>© 2026 Dashboard. All rights reserved.</p>
-    </footer>
-    <script src="script.js"></script>
+<nav class="sidebar">
+  <div class="sb-brand">
+    <div><span class="sb-dot"></span><span class="sb-name">habite.cl</span></div>
+    <span class="sb-sub">auditoría digital 2026</span>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-sec">Análisis</div>
+    <div class="ni on" onclick="go('overview',this)"><span class="ni-ico">◈</span>Resumen general</div>
+    <div class="ni" onclick="go('aeo',this)"><span class="ni-ico">◎</span>AEO<span class="nb nb-r">12</span></div>
+    <div class="ni" onclick="go('geo',this)"><span class="ni-ico">◐</span>GEO<span class="nb nb-r">18</span></div>
+    <div class="sb-sec" style="margin-top:6px">Acciones</div>
+    <div class="ni" onclick="go('fixes',this)"><span class="ni-ico">✦</span>Correcciones rápidas</div>
+    <div class="ni" onclick="go('roadmap',this)"><span class="ni-ico">→</span>Roadmap</div>
+  </div>
+  <div class="sb-foot">auditado 18 mar 2026<br>datos extraídos en tiempo real</div>
+</nav>
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="tb-title" id="tb-title">Resumen general</div>
+      <div class="tb-meta">habite.cl · Habite Inmobiliaria Santiago</div>
+    </div>
+    <div class="ab"><span class="ad"></span>análisis completado</div>
+  </div>
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div id="p-overview" class="panel on">
+      <div class="hero">
+        <div class="ov"><div class="ov-n">15</div><div class="ov-l">score global /100</div></div>
+        <div class="hero-t">Habite Inmobiliaria</div>
+        <div class="hero-url">https://habite.cl/</div>
+        <div class="hero-stats">
+          <div class="hs"><div class="hv" style="color:var(--red)">12</div><div class="hl">AEO</div></div>
+          <div class="hs"><div class="hv" style="color:var(--red)">18</div><div class="hl">GEO</div></div>
+          <div class="hs"><div class="hv" style="color:var(--red)">0</div><div class="hl">Schemas JSON-LD</div></div>
+          <div class="hs"><div class="hv" style="color:var(--amber)">232</div><div class="hl">Palabras página</div></div>
+          <div class="hs"><div class="hv" style="color:var(--red)">32</div><div class="hl">Scripts JS</div></div>
+        </div>
+      </div>
+      <div class="sg">
+        <div class="sc sc-r">
+          <div class="sc-ghost">12</div>
+          <div class="sc-lbl">AEO — Answer Engine</div>
+          <div class="sc-num">12<span class="sc-max">/100</span></div>
+          <div class="sc-sub">Sin schemas, sin FAQ, sin rich results</div>
+          <div class="sc-bar"><div class="sc-fill" style="width:12%"></div></div>
+        </div>
+        <div class="sc sc-r">
+          <div class="sc-ghost">18</div>
+          <div class="sc-lbl">GEO — Generative Engine</div>
+          <div class="sc-num">18<span class="sc-max">/100</span></div>
+          <div class="sc-sub">Invisible para ChatGPT, Perplexity, AI Overview</div>
+          <div class="sc-bar"><div class="sc-fill" style="width:18%"></div></div>
+        </div>
+      </div>
+
+      <!-- RADAR SVG puro -->
+      <div class="cc">
+        <div class="cc-t">Radar de madurez digital — actual vs objetivo fase 3</div>
+        <svg viewBox="0 0 460 290" xmlns="http://www.w3.org/2000/svg" style="max-height:290px">
+          <!-- Anillos hexagonales centrados en 200,155 -->
+          <g transform="translate(200,150)">
+            <polygon points="0,-90 77.9,-45 77.9,45 0,90 -77.9,45 -77.9,-45" fill="none" stroke="#222220" stroke-width="1"/>
+            <polygon points="0,-67.5 58.4,-33.75 58.4,33.75 0,67.5 -58.4,33.75 -58.4,-33.75" fill="none" stroke="#1e1e1c" stroke-width=".5"/>
+            <polygon points="0,-45 38.97,-22.5 38.97,22.5 0,45 -38.97,22.5 -38.97,-22.5" fill="none" stroke="#1e1e1c" stroke-width=".5"/>
+            <polygon points="0,-22.5 19.48,-11.25 19.48,11.25 0,22.5 -19.48,11.25 -19.48,-11.25" fill="none" stroke="#1e1e1c" stroke-width=".5"/>
+            <!-- Ejes -->
+            <line x1="0" y1="0" x2="0" y2="-90" stroke="#2a2a28" stroke-width=".5"/>
+            <line x1="0" y1="0" x2="77.9" y2="-45" stroke="#2a2a28" stroke-width=".5"/>
+            <line x1="0" y1="0" x2="77.9" y2="45" stroke="#2a2a28" stroke-width=".5"/>
+            <line x1="0" y1="0" x2="0" y2="90" stroke="#2a2a28" stroke-width=".5"/>
+            <line x1="0" y1="0" x2="-77.9" y2="45" stroke="#2a2a28" stroke-width=".5"/>
+            <line x1="0" y1="0" x2="-77.9" y2="-45" stroke="#2a2a28" stroke-width=".5"/>
+            <!-- Area objetivo 80% -->
+            <polygon points="0,-72 66.7,-36 66.7,36 0,72 -66.7,36 -66.7,-36" fill="rgba(76,175,118,.07)" stroke="#4caf76" stroke-width="1" stroke-dasharray="4 3"/>
+            <!-- Area actual: AEO=12%, GEO=18%, Contenido=10%, Local=5%, FAQ=0%, Schemas=0% -->
+            <!-- v1=90*0.12=10.8, v2=(77.9*0.18,-45*0.18)=(14,-8.1), v3=(77.9*0.10,45*0.10)=(7.8,4.5) -->
+            <!-- v4=(0,90*0.05)=(0,4.5), v5=(-77.9*0,-45*0)=(0,0), v6=(-77.9*0,-45*0)=(0,0) -->
+            <polygon points="0,-10.8 14,-8.1 7.8,4.5 0,4.5 0,0 0,0" fill="rgba(224,85,85,.25)" stroke="#e05555" stroke-width="1.5"/>
+            <!-- Puntos actuales -->
+            <circle cx="0" cy="-10.8" r="3.5" fill="#e05555"/>
+            <circle cx="14" cy="-8.1" r="3.5" fill="#e05555"/>
+            <circle cx="7.8" cy="4.5" r="3.5" fill="#e05555"/>
+            <!-- Labels de ejes -->
+            <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="middle" x="0" y="-97">AEO</text>
+            <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="start" x="83" y="-49">GEO</text>
+            <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="start" x="83" y="54">Contenido</text>
+            <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="middle" x="0" y="107">Local / Maps</text>
+            <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="-83" y="54">FAQ / Schema</text>
+            <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="-83" y="-49">Datos estruct.</text>
+          </g>
+          <!-- Leyenda derecha -->
+          <rect x="320" y="20" width="9" height="9" rx="2" fill="rgba(224,85,85,.3)" stroke="#e05555" stroke-width="1"/>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="334" y="28">Actual</text>
+          <rect x="320" y="37" width="9" height="9" rx="2" fill="rgba(76,175,118,.12)" stroke="#4caf76" stroke-width="1"/>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="334" y="45">Objetivo F3</text>
+        </svg>
+      </div>
+
+      <!-- BARRAS HORIZONTALES SVG -->
+      <div class="cc">
+        <div class="cc-t">Diagnóstico por dimensión — score actual</div>
+        <svg viewBox="0 0 460 215" xmlns="http://www.w3.org/2000/svg" style="max-height:215px">
+          <!-- Labels izquierda -->
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="135" y="28">Datos estructurados</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="135" y="63">Open Graph / Social</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="135" y="98">GEO / IA generativa</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="135" y="133">AEO / Snippets</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="135" y="168">Contenido on-page</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="135" y="203">Velocidad / CWV</text>
+          <!-- Fondos (300px = 100%) -->
+          <rect x="142" y="15" width="300" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="142" y="50" width="300" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="142" y="85" width="300" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="142" y="120" width="300" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="142" y="155" width="300" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="142" y="190" width="300" height="16" rx="3" fill="#1a1a18"/>
+          <!-- Barras de valor: 0%, 0%, 18%, 12%, 20%, 30% -->
+          <rect x="142" y="15" width="0" height="16" rx="3" fill="#e05555"/>
+          <rect x="142" y="50" width="0" height="16" rx="3" fill="#e05555"/>
+          <rect x="142" y="85" width="54" height="16" rx="3" fill="#e05555"/>
+          <rect x="142" y="120" width="36" height="16" rx="3" fill="#e05555"/>
+          <rect x="142" y="155" width="60" height="16" rx="3" fill="#e09640"/>
+          <rect x="142" y="190" width="90" height="16" rx="3" fill="#e09640"/>
+          <!-- Valores -->
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#6b6960" x="147" y="27">0%</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#6b6960" x="147" y="62">0%</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="201" y="97">18%</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="183" y="132">12%</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="207" y="167">20%</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="237" y="202">30%</text>
+        </svg>
+      </div>
+
+      <div class="sh"><div class="sh-t">Hallazgos clave</div><div class="sh-l"></div></div>
+      <div class="il">
+        <div class="iss cr"><span class="ibg">crítico</span><div><div class="it">Cero schemas JSON-LD implementados</div><div class="id">Sin LocalBusiness, RealEstateAgent, FAQPage ni Offer schemas. Google no puede generar rich results ni knowledge panel.</div></div></div>
+        <div class="iss cr"><span class="ibg">crítico</span><div><div class="it">Sin Open Graph — tarjetas sociales vacías</div><div class="id">Al compartir en WhatsApp, Facebook o LinkedIn aparece sin imagen ni descripción. Crítico para una inmobiliaria que opera por referidos digitales.</div></div></div>
+        <div class="iss cr"><span class="ibg">crítico</span><div><div class="it">Invisible para motores generativos de IA</div><div class="id">Habite.cl no aparece cuando se pregunta a ChatGPT, Perplexity o Google AI Overview sobre departamentos en Cerrillos o La Florida.</div></div></div>
+        <div class="iss wa"><span class="ibg">alerta</span><div><div class="it">Solo 232 palabras de contenido en homepage</div><div class="id">Las IAs generativas y Google necesitan contenido denso y verificable para citar una fuente. El sitio es casi solo imágenes y precios.</div></div></div>
+        <div class="iss ok"><span class="ibg">correcto</span><div><div class="it">HTTPS · lang="es" · GTM · LinkedIn Pixel · 3 redes sociales activas</div><div class="id">Bases técnicas y tracking correctamente configurados. Punto de partida sólido.</div></div></div>
+      </div>
+    </div>
+
+    <!-- AEO -->
+    <div id="p-aeo" class="panel">
+      <div class="sh"><div class="sh-t">AEO — Answer Engine Optimization</div><div class="sh-l"></div></div>
+      <div class="iss wa" style="margin-bottom:22px"><span class="ibg">score 12/100</span><div><div class="it">¿Qué es AEO?</div><div class="id">Answer Engine Optimization estructura el contenido para que Google lo muestre directamente: featured snippets, People Also Ask, Knowledge Panels y rich results. Habite.cl no tiene ningún elemento AEO activo.</div></div></div>
+      <div class="cc">
+        <div class="cc-t">Elementos AEO — presentes vs requeridos</div>
+        <svg viewBox="0 0 460 245" xmlns="http://www.w3.org/2000/svg" style="max-height:245px">
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="28">LocalBusiness schema</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="60">RealEstateAgent schema</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="92">FAQPage schema</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="124">BreadcrumbList schema</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="156">Offer / Product schema</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="188">Organization + sameAs</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="220">Google Business Profile</text>
+          <!-- Fondos -->
+          <rect x="162" y="15" width="282" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="47" width="282" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="79" width="282" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="111" width="282" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="143" width="282" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="175" width="282" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="207" width="282" height="16" rx="3" fill="#1a1a18"/>
+          <!-- Labels "no implementado" sobre fondos -->
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#3a1818" x="167" y="27">no implementado</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#3a1818" x="167" y="59">no implementado</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#3a1818" x="167" y="91">no implementado</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#3a1818" x="167" y="123">no implementado</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#3a1818" x="167" y="155">no implementado</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#3a1818" x="167" y="187">no implementado</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#3a1818" x="167" y="219">no implementado</text>
+        </svg>
+      </div>
+      <div class="sh"><div class="sh-t">Oportunidades de alto impacto</div><div class="sh-l"></div></div>
+      <div class="il">
+        <div class="iss cr"><span class="ibg">prioritario</span><div><div class="it">Schema LocalBusiness + RealEstateAgent</div><div class="id">Permite que Google genere Knowledge Panel con nombre, dirección (Av. La Dehesa 0181, Lo Barnechea), teléfono (+56 2 2335 7719), horarios y redes. La información ya existe en el footer — solo falta estructurarla en JSON-LD.</div></div></div>
+        <div class="iss cr"><span class="ibg">prioritario</span><div><div class="it">FAQPage schema — aparecer en People Also Ask</div><div class="id">Preguntas como "¿Cómo comprar en blanco?", "¿Qué subsidios existen?", "¿Cuánto pie necesito?" capturan tráfico de alta intención antes de que el usuario compare competidores.</div></div></div>
+        <div class="iss cr"><span class="ibg">prioritario</span><div><div class="it">Schema Offer por proyecto (×3 proyectos)</div><div class="id">Rich results con "Desde UF 2.500" visibles en los SERPs. San Andrés, Martín de Solier y Lía Aguirre con precio, disponibilidad y URL canónica.</div></div></div>
+        <div class="iss wa"><span class="ibg">importante</span><div><div class="it">BreadcrumbList + Organization con sameAs</div><div class="id">Inicio › Proyectos › Edificio en los SERPs. Vincula oficialmente el sitio a Facebook, Instagram y LinkedIn en el Knowledge Graph de Google.</div></div></div>
+      </div>
+    </div>
+
+    <!-- GEO -->
+    <div id="p-geo" class="panel">
+      <div class="sh"><div class="sh-t">GEO — Generative Engine Optimization</div><div class="sh-l"></div></div>
+      <div class="iss wa" style="margin-bottom:22px"><span class="ibg">score 18/100</span><div><div class="it">¿Qué es GEO?</div><div class="id">Generative Engine Optimization optimiza para que ChatGPT, Perplexity, Google AI Overview y Copilot citen y recomienden tu marca al responder sobre compra de departamentos en Santiago. El comprador pregunta a una IA antes de visitar sitios.</div></div></div>
+      <div class="gg">
+        <div class="ge"><div class="ge-n">🔍 Google AI Overview</div><div class="ge-s" style="color:var(--red)">15<span style="font-size:13px;color:var(--text3)">/100</span></div><div class="ge-b"><div class="ge-bf" style="width:15%;background:var(--red)"></div></div><div class="ge-d">Sin GBP verificado, sin schema local, sin contenido informacional. AI Overview prioriza fuentes con datos estructurados y autoridad local demostrable.</div></div>
+        <div class="ge"><div class="ge-n">💬 ChatGPT / Bing</div><div class="ge-s" style="color:var(--red)">20<span style="font-size:13px;color:var(--text3)">/100</span></div><div class="ge-b"><div class="ge-bf" style="width:20%;background:var(--red)"></div></div><div class="ge-d">Sin presencia en directorios inmobiliarios chilenos que ChatGPT referencia. Puede aparecer para búsquedas directas de marca.</div></div>
+        <div class="ge"><div class="ge-n">🔮 Perplexity AI</div><div class="ge-s" style="color:var(--amber)">25<span style="font-size:13px;color:var(--text3)">/100</span></div><div class="ge-b"><div class="ge-bf" style="width:25%;background:var(--amber)"></div></div><div class="ge-d">Rastrea más fuentes que Google. Puede aparecer en consultas directas de marca pero no en búsquedas competitivas de departamentos.</div></div>
+        <div class="ge"><div class="ge-n">🏢 Microsoft Copilot</div><div class="ge-s" style="color:var(--red)">12<span style="font-size:13px;color:var(--text3)">/100</span></div><div class="ge-b"><div class="ge-bf" style="width:12%;background:var(--red)"></div></div><div class="ge-d">Sin menciones en medios chilenos ni portales indexados por Bing. Baja presencia en las fuentes que Copilot consulta.</div></div>
+      </div>
+      <div class="cc">
+        <div class="cc-t">Factores GEO — nivel actual</div>
+        <svg viewBox="0 0 460 215" xmlns="http://www.w3.org/2000/svg" style="max-height:215px">
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="28">Contenido informacional</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="63">Google Business Profile</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="98">Autoridad de dominio</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="133">Presencia en directorios</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="168">Menciones externas</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="end" x="155" y="203">Artículos de blog</text>
+          <!-- fondos (280px=100%) -->
+          <rect x="162" y="15" width="280" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="50" width="280" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="85" width="280" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="120" width="280" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="155" width="280" height="16" rx="3" fill="#1a1a18"/>
+          <rect x="162" y="190" width="280" height="16" rx="3" fill="#1a1a18"/>
+          <!-- Barras: 10,15,35,40,20,5 -->
+          <rect x="162" y="15" width="28" height="16" rx="3" fill="#e05555"/>
+          <rect x="162" y="50" width="42" height="16" rx="3" fill="#e05555"/>
+          <rect x="162" y="85" width="98" height="16" rx="3" fill="#e09640"/>
+          <rect x="162" y="120" width="112" height="16" rx="3" fill="#e09640"/>
+          <rect x="162" y="155" width="56" height="16" rx="3" fill="#e05555"/>
+          <rect x="162" y="190" width="14" height="16" rx="3" fill="#e05555"/>
+          <!-- valores -->
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="195" y="27">10%</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="209" y="62">15%</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="265" y="97">35%</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="279" y="132">40%</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="223" y="167">20%</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="181" y="202">5%</text>
+        </svg>
+      </div>
+      <div class="sh"><div class="sh-t">Estrategia GEO</div><div class="sh-l"></div></div>
+      <div class="il">
+        <div class="iss cr"><span class="ibg">crítico</span><div><div class="it">Blog con contenido informacional denso (mín. 800 palabras c/u)</div><div class="id">Artículos: "Cómo comprar en Cerrillos 2026", "Subsidio DS19 y DS49 para primer departamento", "¿Vale la pena invertir en La Florida?", "Comprar en blanco vs entrega inmediata". Las IAs citan páginas con datos específicos y verificables.</div></div></div>
+        <div class="iss cr"><span class="ibg">crítico</span><div><div class="it">Google Business Profile verificado y activo</div><div class="id">Fuente primaria que Google AI Overview usa para recomendar inmobiliarias locales. Fotos de proyectos, horarios, respuesta a reseñas y publicaciones semanales. 23 años de trayectoria deben estar documentados.</div></div></div>
+        <div class="iss wa"><span class="ibg">importante</span><div><div class="it">Presencia en directorios inmobiliarios chilenos</div><div class="id">Portal Inmobiliario, Goplaceit, TocToc.com y Yapo.cl son fuentes que Perplexity y ChatGPT consultan. NAP idéntico al sitio web.</div></div></div>
+        <div class="iss wa"><span class="ibg">importante</span><div><div class="it">Menciones en medios y prensa regional</div><div class="id">Nota en Biobio.cl, La Tercera Inmobiliaria o El Mercurio Propiedades multiplica la probabilidad de ser citado. Una historia de 23 años en Cerrillos es noticiable.</div></div></div>
+      </div>
+    </div>
+
+    <!-- CORRECCIONES -->
+    <div id="p-fixes" class="panel">
+      <div class="sh"><div class="sh-t">Código listo para implementar</div><div class="sh-l"></div></div>
+      <div class="fb">
+        <div class="fh"><div class="fn">1</div><div class="ft">Open Graph completo</div><span class="fp hi">urgente · 20 min</span></div>
+        <div class="fd">Agregar en &lt;head&gt;. Crear imagen OG de 1200×630px con foto de un proyecto.</div>
+        <div class="cl">Pegar en &lt;head&gt;</div>
+        <div class="cb">&lt;meta property="og:type" content="website"&gt;
+&lt;meta property="og:url" content="https://habite.cl/"&gt;
+&lt;meta property="og:title" content="Habite — Departamentos nuevos en Santiago"&gt;
+&lt;meta property="og:description" content="Proyectos desde UF 2.500 en Cerrillos y La Florida. 23 años de experiencia."&gt;
+&lt;meta property="og:image" content="https://habite.cl/images/og-habite.jpg"&gt;
+&lt;meta name="twitter:card" content="summary_large_image"&gt;
+&lt;meta name="twitter:image" content="https://habite.cl/images/og-habite.jpg"&gt;</div>
+      </div>
+      <div class="fb">
+        <div class="fh"><div class="fn">2</div><div class="ft">Schema LocalBusiness + RealEstateAgent</div><span class="fp hi">urgente · 30 min</span></div>
+        <div class="fd">Pegar antes de &lt;/head&gt;. Activa Knowledge Panel en Google con dirección, teléfono y redes.</div>
+        <div class="cb">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": ["LocalBusiness", "RealEstateAgent"],
+  "name": "Habite Inmobiliaria",
+  "url": "https://habite.cl",
+  "foundingDate": "2001",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Av. La Dehesa 0181, Of. 1002",
+    "addressLocality": "Lo Barnechea",
+    "addressRegion": "Región Metropolitana",
+    "addressCountry": "CL"
+  },
+  "telephone": "+56223357719",
+  "email": "recepcion@habite.cl",
+  "sameAs": [
+    "https://www.facebook.com/ihabite/",
+    "https://www.instagram.com/ihabite/",
+    "https://www.linkedin.com/company/inmobiliaria-habite/"
+  ]
+}
+&lt;/script&gt;</div>
+      </div>
+      <div class="fb">
+        <div class="fh"><div class="fn">3</div><div class="ft">FAQPage schema — starter</div><span class="fp me">importante · 2h</span></div>
+        <div class="fd">Crear página /preguntas-frecuentes. Activa People Also Ask y featured snippets en Google.</div>
+        <div class="cb">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "¿Cómo funciona comprar un departamento en blanco?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Comprar en blanco significa adquirir antes de construcción. En Habite, Edificio San Andrés en Cerrillos desde UF 2.812."
+    }
+  },{
+    "@type": "Question",
+    "name": "¿Qué precio tienen los departamentos de Habite?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Desde UF 2.500 (Martín de Solier, Cerrillos) hasta UF 2.855 (Lía Aguirre, La Florida). 1 y 2 dormitorios."
+    }
+  }]
+}
+&lt;/script&gt;</div>
+      </div>
+      <div class="fb">
+        <div class="fh"><div class="fn">4</div><div class="ft">Schema Offer por proyecto</div><span class="fp me">importante · 3h</span></div>
+        <div class="fd">Agregar en cada página de proyecto. Genera rich results con precio visible en SERPs.</div>
+        <div class="cb">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Edificio Martín de Solier — Departamentos Cerrillos",
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "CLF",
+    "price": "2500",
+    "availability": "https://schema.org/InStock",
+    "url": "https://habite.cl/martin-de-solier"
+  }
+}
+&lt;/script&gt;</div>
+      </div>
+    </div>
+
+    <!-- ROADMAP -->
+    <div id="p-roadmap" class="panel">
+      <div class="sh"><div class="sh-t">Roadmap de mejora — 3 fases</div><div class="sh-l"></div></div>
+      <div class="rt">
+        <div class="rph"><span class="rpl rp1">Fase 1 — Semana 1–2</span><span class="rpht">Correcciones de impacto inmediato</span></div>
+        <div class="rpb">
+          <div class="ri"><div><div class="rt-t">Open Graph + Twitter Cards</div><div class="rt-d">9 metaetiquetas. Imagen 1200×630px. Impacto en compartidos en redes y conversión por referidos digitales.</div></div><div class="rm"><span class="rim hi">urgente</span><span class="re">30 min</span></div></div>
+          <div class="ri"><div><div class="rt-t">URL canónica en todas las páginas</div><div class="rt-d">Previene penalización por duplicado entre habite.cl y www.habite.cl.</div></div><div class="rm"><span class="rim hi">urgente</span><span class="re">1h</span></div></div>
+          <div class="ri"><div><div class="rt-t">Title corregido a 65ch + H1 en homepage</div><div class="rt-d">Corregir title (113→65ch) y agregar H1 con keyword principal. Base SEO mínima requerida.</div></div><div class="rm"><span class="rim hi">urgente</span><span class="re">30 min</span></div></div>
+        </div>
+        <div class="rph"><span class="rpl rp2">Fase 2 — Semana 3–4</span><span class="rpht">Datos estructurados + presencia local</span></div>
+        <div class="rpb">
+          <div class="ri"><div><div class="rt-t">Schema LocalBusiness + RealEstateAgent</div><div class="rt-d">JSON-LD con dirección, teléfono, horarios, año fundación (2001) y redes. Habilita Knowledge Panel en Google.</div></div><div class="rm"><span class="rim me">importante</span><span class="re">2h</span></div></div>
+          <div class="ri"><div><div class="rt-t">Schema Offer por proyecto (×3)</div><div class="rt-d">San Andrés, Martín de Solier y Lía Aguirre con precio en UF, disponibilidad y URL canónica de cada proyecto.</div></div><div class="rm"><span class="rim me">importante</span><span class="re">4h</span></div></div>
+          <div class="ri"><div><div class="rt-t">Google Business Profile verificado</div><div class="rt-d">Fotos, servicios, horarios, respuesta a reseñas. Publicaciones semanales. Fuente #1 de Google AI Overview local.</div></div><div class="rm"><span class="rim me">importante</span><span class="re">1 día</span></div></div>
+        </div>
+        <div class="rph"><span class="rpl rp3">Fase 3 — Mes 2–3</span><span class="rpht">Contenido y autoridad GEO</span></div>
+        <div class="rpb">
+          <div class="ri"><div><div class="rt-t">Página FAQ con FAQPage schema</div><div class="rt-d">Mínimo 10 preguntas reales: financiamiento, subsidios, plazos, diferencias por proyecto. Activa People Also Ask.</div></div><div class="rm"><span class="rim lo">estratégico</span><span class="re">1 semana</span></div></div>
+          <div class="ri"><div><div class="rt-t">Blog inmobiliario — 6 artículos GEO</div><div class="rt-d">Guías por comuna (Cerrillos, La Florida), subsidios 2026, comprar en blanco vs inmediato, rentabilidad inversión. Mín. 800 palabras c/u con datos verificables.</div></div><div class="rm"><span class="rim lo">estratégico</span><span class="re">3 semanas</span></div></div>
+          <div class="ri"><div><div class="rt-t">Presencia en directorios inmobiliarios</div><div class="rt-d">Portal Inmobiliario, Goplaceit, TocToc, Yapo. NAP idéntico al sitio. Fuentes que ChatGPT y Perplexity indexan.</div></div><div class="rm"><span class="rim lo">estratégico</span><span class="re">3 días</span></div></div>
+          <div class="ri"><div><div class="rt-t">Consolidar y diferir scripts JS</div><div class="rt-d">32 scripts → bundle optimizado con defer. Objetivo LCP &lt; 2.5s. Impacto en Core Web Vitals y ranking móvil.</div></div><div class="rm"><span class="rim lo">estratégico</span><span class="re">1 semana</span></div></div>
+        </div>
+      </div>
+
+      <!-- IMPACTO PROYECTADO SVG -->
+      <div class="cc">
+        <div class="cc-t">Impacto proyectado AEO y GEO por fase</div>
+        <svg viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" style="max-height:220px">
+          <!-- Grid lines -->
+          <line x1="60" y1="20" x2="60" y2="165" stroke="#222220" stroke-width=".5"/>
+          <line x1="60" y1="165" x2="445" y2="165" stroke="#222220" stroke-width=".5"/>
+          <line x1="60" y1="127" x2="445" y2="127" stroke="#1e1e1c" stroke-width=".5"/>
+          <line x1="60" y1="90" x2="445" y2="90" stroke="#1e1e1c" stroke-width=".5"/>
+          <line x1="60" y1="52" x2="445" y2="52" stroke="#1e1e1c" stroke-width=".5"/>
+          <!-- Y labels -->
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#6b6960" text-anchor="end" x="55" y="169">0</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#6b6960" text-anchor="end" x="55" y="131">25</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#6b6960" text-anchor="end" x="55" y="94">50</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#6b6960" text-anchor="end" x="55" y="56">75</text>
+          <!-- Grupos x: 115, 210, 305, 400 -->
+          <!-- altura = (val/100)*145 -->
+          <!-- AEO: 12, 18, 60, 75 | GEO: 18, 22, 38, 65 -->
+          <!-- Actual -->
+          <rect x="97"  y="147.6" width="16" height="17.4" rx="2" fill="#e05555" opacity=".85"/>
+          <rect x="115" y="139"   width="16" height="26"   rx="2" fill="#4caf76" opacity=".7"/>
+          <!-- Post F1 -->
+          <rect x="192" y="139"   width="16" height="26"   rx="2" fill="#e05555" opacity=".85"/>
+          <rect x="210" y="133"   width="16" height="32"   rx="2" fill="#4caf76" opacity=".7"/>
+          <!-- Post F2 -->
+          <rect x="287" y="78"    width="16" height="87"   rx="2" fill="#e05555" opacity=".85"/>
+          <rect x="305" y="110"   width="16" height="55"   rx="2" fill="#4caf76" opacity=".7"/>
+          <!-- Post F3 -->
+          <rect x="382" y="56.75" width="16" height="108.25" rx="2" fill="#e05555" opacity=".85"/>
+          <rect x="400" y="70.75" width="16" height="94.25"  rx="2" fill="#4caf76" opacity=".7"/>
+          <!-- X labels -->
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="middle" x="114"  y="180">Actual</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="middle" x="209"  y="180">Post F1</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="middle" x="304"  y="180">Post F2</text>
+          <text font-family="'Bricolage Grotesque',sans-serif" font-size="11" fill="#9e9c95" text-anchor="middle" x="399"  y="180">Post F3</text>
+          <!-- Valores encima -->
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#e05555" text-anchor="middle" x="105"  y="144">12</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#4caf76" text-anchor="middle" x="123"  y="136">18</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#e05555" text-anchor="middle" x="200"  y="136">18</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#4caf76" text-anchor="middle" x="218"  y="130">22</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#e05555" text-anchor="middle" x="295"  y="75">60</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#4caf76" text-anchor="middle" x="313"  y="107">38</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#e05555" text-anchor="middle" x="390"  y="53">75</text>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#4caf76" text-anchor="middle" x="408"  y="67">65</text>
+          <!-- Leyenda -->
+          <rect x="65"  y="198" width="10" height="10" rx="2" fill="#e05555" opacity=".85"/>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="80" y="207">AEO</text>
+          <rect x="120" y="198" width="10" height="10" rx="2" fill="#4caf76" opacity=".7"/>
+          <text font-family="'DM Mono',monospace" font-size="10" fill="#9e9c95" x="135" y="207">GEO</text>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</main>
+<script>
+function go(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  el.classList.add('on');
+  const t={overview:'Resumen general',aeo:'AEO — Answer Engine',geo:'GEO — Generative',fixes:'Correcciones rápidas',roadmap:'Roadmap'};
+  document.getElementById('tb-title').textContent=t[id]||id;
+}
+</script>
 </body>
 </html>
