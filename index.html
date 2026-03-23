@@ -3,43 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>habite.cl — Auditoría AEO · GEO</title>
-    <!-- other head content -->
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Auditoría AEO · GEO</h1>
-        <!-- other header content -->
+        <h1>Dashboard Overview</h1>
     </header>
     <main>
-        <div id="overview">
-            <div class="hero-stats">
-                <!-- Other score cards -->
-                <!-- Removed 'SEO técnico' stats and score-card -->
-            </div>
-            <div class="score-cards">
-                <!-- All score cards except for 'SEO técnico' -->
-            </div>
-        </div>
-        <div class="radar-chart">
-            <canvas id="radarChart"></canvas>
-        </div>
+        <section id="overview">
+            <h2>Overview Panel</h2>
+            <!-- Content related to Overview and other panels without SEO references -->
+        </section>
+        <section id="AEO">
+            <h2>AEO Panel</h2>
+            <!-- Content related to AEO without SEO references -->
+        </section>
+        <section id="GEO">
+            <h2>GEO Panel</h2>
+            <!-- Content related to GEO without SEO references -->
+        </section>
+        <section id="Fixes">
+            <h2>Fixes Panel</h2>
+            <!-- List of critical findings without SEO-related content -->
+        </section>
+        <section id="Roadmap">
+            <h2>Roadmap Panel</h2>
+            <!-- Roadmap content without SEO-related content -->
+        </section>
+        <section id="charts">
+            <h2>Charts</h2>
+            <!-- Keep only relevant datasets and labels, update charts accordingly -->
+        </section>
     </main>
-    <script>
-        function show(id, el) {
-            // Removed initSeoBar initialization
-            // Other code for the show function
-        }
-
-        // Removed function initSeoBar()
-
-        function initImpactChart() {
-            const datasets = [
-                { label: 'AEO', data: [/* data for AEO */] },
-                { label: 'GEO', data: [/* data for GEO */] },
-            ];
-            // Other code for initializing impact chart
-        }
-    </script>
+    <footer>
+        <p>© 2026 Dashboard. All rights reserved.</p>
+    </footer>
+    <script src="script.js"></script>
 </body>
 </html>
